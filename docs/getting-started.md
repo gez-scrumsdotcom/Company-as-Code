@@ -5,8 +5,8 @@ A walkthrough from clone to first module to first agent. Assumes Node 20+.
 ## 1. Clone and install
 
 ```bash
-git clone https://github.com/your-org/company-as-code.git
-cd company-as-code
+git clone https://github.com/gez-scrumsdotcom/Company-as-Code.git
+cd Company-as-Code
 cd cli && npm install && cd ..
 ```
 

@@ -21,3 +21,6 @@ jobs:
       - name: Validate manifests, agents, workflows, primitives
         working-directory: cli
         run: npm run validate
+      - name: Unit tests
+        working-directory: cli
+        run: npm test

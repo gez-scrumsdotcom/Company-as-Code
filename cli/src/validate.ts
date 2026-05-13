@@ -2,33 +2,30 @@ import Ajv2020 from "ajv/dist/2020.js";
 import addFormats from "ajv-formats";
 import { loadCorpus, loadSchemas, schemaFor, type RepoCorpus } from "./loader.js";
 
-interface ValidationProblem {
+export interface ValidationProblem {
   file: string;
   kind: string;
   errors: string[];
 }
 
-export async function validateCommand(): Promise<boolean> {
-  const schemas = await loadSchemas();
-  const corpus = await loadCorpus();
-
+export function buildAjv(schemas: Record<string, unknown>) {
   const ajv = new Ajv2020({ allErrors: true, strict: false });
   addFormats(ajv);
   for (const [name, schema] of Object.entries(schemas)) {
-    ajv.addSchema(schema, name);
+    ajv.addSchema(schema as object, name);
   }
+  return ajv;
+}
 
+export function schemaValidate(
+  corpus: RepoCorpus,
+  ajv: ReturnType<typeof buildAjv>,
+): ValidationProblem[] {
   const problems: ValidationProblem[] = [];
-  let totalDocs = 0;
-
   for (const bucket of Object.keys(corpus) as (keyof RepoCorpus)[]) {
-    const schemaName = schemaFor(bucket);
-    const validator = ajv.getSchema(schemaName);
-    if (!validator) {
-      throw new Error(`Schema not loaded: ${schemaName}`);
-    }
+    const validator = ajv.getSchema(schemaFor(bucket));
+    if (!validator) throw new Error(`Schema not loaded: ${schemaFor(bucket)}`);
     for (const doc of corpus[bucket]) {
-      totalDocs += 1;
       const ok = validator(doc.data);
       if (!ok) {
         const errs = (validator.errors ?? []).map(
@@ -38,8 +35,16 @@ export async function validateCommand(): Promise<boolean> {
       }
     }
   }
+  return problems;
+}
 
-  // Cross-document discipline checks.
+export async function validateCommand(): Promise<boolean> {
+  const schemas = await loadSchemas();
+  const corpus = await loadCorpus();
+  const ajv = buildAjv(schemas);
+
+  const problems = schemaValidate(corpus, ajv);
+  const totalDocs = Object.values(corpus).reduce((sum, arr) => sum + arr.length, 0);
   const crossErrors = crossDocumentChecks(corpus);
 
   if (problems.length === 0 && crossErrors.length === 0) {
@@ -61,7 +66,7 @@ export async function validateCommand(): Promise<boolean> {
   return false;
 }
 
-function crossDocumentChecks(corpus: RepoCorpus): string[] {
+export function crossDocumentChecks(corpus: RepoCorpus): string[] {
   const errors: string[] = [];
 
   // 1. Workflow hitl=true must not have schedule trigger.

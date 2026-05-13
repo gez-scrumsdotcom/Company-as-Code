@@ -176,9 +176,9 @@ The top-level `/schemas` and `/templates` are framework-level (define the shape)
 
 ```bash
 # 1. Clone and install the reference CLI
-git clone https://github.com/your-org/company-as-code.git
-cd company-as-code
-npm install
+git clone https://github.com/gez-scrumsdotcom/Company-as-Code.git
+cd Company-as-Code
+npm install --prefix cli
 
 # 2. Validate every manifest, agent, workflow, and schema
 npm run validate
@@ -223,6 +223,8 @@ See [`docs/architecture.md#ai-native-design`](./docs/architecture.md) for the fu
 
 ## Project status
 
+**Current release:** `v0.1.0` — initial public seed.
+
 This is a **seed repository**. It ships:
 
 - the complete canonical structure
@@ -251,6 +253,14 @@ See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for the contribution workflow. The sh
 ## License
 
 [Apache License 2.0](./LICENSE). Fork, adapt, deploy, sell. Patent grant included.
+
+---
+
+## Author
+
+Created by **Gerald Neves**, Founder & CEO at [Scrums.com](https://scrums.com) — the all-in-one **Software Engineering Orchestration Platform (SEOP)**.
+
+Company-as-Code is the open-source operating-system pattern behind SEOP's view of how modern, AI-native organizations should be designed, observed, and run.
 
 ---
 

@@ -20,6 +20,7 @@ export async function generateCommand(opts: GenerateOptions): Promise<boolean> {
     flowRegistry(corpus),
     dependencyGraph(corpus),
     domainModel(corpus),
+    ...contextBundles(corpus),
   ];
 
   if (opts.check) {
@@ -213,4 +214,99 @@ function domainModel(corpus: RepoCorpus): GeneratedFile {
 function manifestPath(file: string): string {
   // company/domains/X/Y/manifest.yaml -> company/domains/X/Y
   return file.replace(/\/manifest\.ya?ml$/, "");
+}
+
+function contextBundles(corpus: RepoCorpus): GeneratedFile[] {
+  // Build module-by-path lookup once.
+  const moduleByPath = new Map<string, any>();
+  for (const m of corpus.manifests) {
+    moduleByPath.set(manifestPath(m.file), m.data);
+  }
+
+  const bundles: GeneratedFile[] = [];
+  for (const agent of corpus.agents) {
+    bundles.push(bundleFor(agent.data, agent.file, moduleByPath));
+  }
+  bundles.sort((a, b) => a.name.localeCompare(b.name));
+  return bundles;
+}
+
+function bundleFor(
+  agent: any,
+  declaredIn: string,
+  moduleByPath: Map<string, any>,
+): GeneratedFile {
+  const modulePath = agent.module as string;
+  const owningModule = moduleByPath.get(modulePath);
+
+  // Resolve interfaces the owning module exposes/consumes. The agent inherits
+  // these as its read/write surface unless the agent declaration narrows them.
+  const exposes = ((owningModule?.exposes ?? []) as any[]).map((e) => ({
+    interface: e.interface,
+    stability: e.stability,
+    description: e.description,
+  }));
+  const consumes = ((owningModule?.consumes ?? []) as any[]).map((c) => ({
+    interface: c.interface,
+    from: c.from,
+    usage: c.usage,
+  }));
+
+  // Outputs that emit a typed event become the agent's "canonical events".
+  const emittedEvents = ((agent.outputs ?? []) as any[])
+    .map((o) => o.emitsEvent)
+    .filter(Boolean)
+    .sort();
+
+  // HITL constraints inherited from the module's invariants where they
+  // mention the agent's name.
+  const moduleInvariants = (owningModule?.invariants ?? []) as string[];
+  const hitlConstraints = moduleInvariants.filter((inv) =>
+    typeof inv === "string" && (inv.toLowerCase().includes("hitl") || inv.toLowerCase().includes("human") || inv.toLowerCase().includes("approval")),
+  );
+
+  const bundle = {
+    apiVersion: "company-as-code/v1",
+    kind: "ContextBundle",
+    generatedFrom: declaredIn,
+    agent: {
+      name: agent.name,
+      module: modulePath,
+      purpose: agent.purpose,
+      runtime: agent.runtime,
+      schedule: agent.schedule,
+      cadence: agent.cadence,
+      autonomy: agent.autonomy,
+      escalation: agent.escalation,
+    },
+    readAccess: {
+      inputs: (agent.inputs ?? []).map((i: any) => ({
+        name: i.name,
+        type: i.type,
+        from: i.from,
+      })),
+      moduleConsumes: consumes,
+    },
+    writeAccess: {
+      outputs: (agent.outputs ?? []).map((o: any) => ({
+        name: o.name,
+        type: o.type,
+        emitsEvent: o.emitsEvent,
+      })),
+      moduleExposes: exposes,
+      hitlConstraints,
+    },
+    tools: (agent.tools ?? []).slice().sort(),
+    memoryScope: agent.memoryScope,
+    canonicalEvents: emittedEvents,
+    observability: {
+      dashboards: ((agent.observability?.dashboards ?? []) as string[]).slice().sort(),
+      alerts: ((agent.observability?.alerts ?? []) as string[]).slice().sort(),
+      auditTopic: agent.observability?.auditTopic,
+    },
+    invariants: (agent.invariants ?? []).slice(),
+  };
+
+  const slug = modulePath.replace(/\//g, "_") + "__" + agent.name + ".json";
+  return { name: path.posix.join("context-bundles", slug), content: stableStringify(bundle) };
 }

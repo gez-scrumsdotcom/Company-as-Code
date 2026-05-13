@@ -83,6 +83,7 @@ Manifests are walked by deterministic generators that emit:
 - **`/generated/flow-registry.json`** — every workflow with trigger + HITL flag
 - **`/generated/dependency-graph.json`** — module-to-module interface edges
 - **`/generated/domain-model.json`** — module ownership of tables and schemas
+- **`/generated/context-bundles/<module>__<agent>.json`** — per-agent typed runtime context, resolved from the agent declaration plus the owning module's exposes/consumes/invariants
 
 CI runs `npm run generate:check` on every PR. If any generated file would change but isn't in the diff, CI fails. Hand-merging generated files is forbidden — when conflicts arise, regenerate.
 
