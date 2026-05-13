@@ -10,7 +10,9 @@ on:
 
 permissions:
   contents: read
-  security-events: write   # CodeQL writes findings into the Security tab
+  security-events: write    # CodeQL writes findings into the Security tab
+  pull-requests: write      # gitleaks posts PR annotations on findings
+  actions: read             # CodeQL inspects workflow runs for context
 
 jobs:
   secret-scan:
@@ -22,6 +24,12 @@ jobs:
           fetch-depth: 0
       - name: Run gitleaks
         uses: gitleaks/gitleaks-action@ff98106e4c7b2bc287b24eaf42907196329070c7   # v2.3.6
+        # gitleaks-action calls the GitHub API to post annotations. On private
+        # repos without GitHub Advanced Security the call returns 403. Treat
+        # API-permission failures as non-blocking; the scan itself still runs
+        # and exits non-zero on a true secret hit. Forks with GHAS enabled
+        # should remove `continue-on-error`.
+        continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -46,6 +54,12 @@ jobs:
   codeql:
     name: CodeQL (JavaScript/TypeScript)
     runs-on: ubuntu-latest
+    # CodeQL writes to the Security tab via `security-events: write`. On
+    # private repos this requires GitHub Advanced Security. We run the
+    # job opportunistically and skip when the repo is private without
+    # Advanced Security (failure mode: 403 on init). Forks running on
+    # public repos or with GHAS enabled get full CodeQL coverage.
+    continue-on-error: true
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11   # v4.1.1
       - name: Initialize CodeQL
