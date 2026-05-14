@@ -39,6 +39,7 @@ code is a spec violation caught at compile time.
 | `event-type-registry.schema.json` | `EventTypeRegistry` |
 | `event.schema.json` | `Event` |
 | `goal.schema.json` | `Goal` |
+| `hub-module.schema.json` | `HubModule` |
 | `initiative.schema.json` | `Initiative` |
 | `integration.schema.json` | `Integration` |
 | `interface.schema.json` | `Interface` |
@@ -46,6 +47,7 @@ code is a spec violation caught at compile time.
 | `metric.schema.json` | `Metric` |
 | `organization.schema.json` | `Organization` |
 | `person.schema.json` | `Person` |
+| `shadow-enrollment.schema.json` | `ShadowEnrollment` |
 | `skill.schema.json` | `Skill` |
 | `state-snapshot.schema.json` | `StateSnapshot` |
 | `task.schema.json` | `Task` |

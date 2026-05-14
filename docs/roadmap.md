@@ -10,6 +10,12 @@ This file is updated through PRs like any other artefact. Disagreements about sc
 
 ## Shipped (in main)
 
+### v0.5.0 cycle — ecosystem & experience
+- **CaC-Hub module registry** — `hub/modules/*` holds community-contributed, importable modules; each is a `HubModule` (new schema) wrapping a schema-valid `payload/`. `cac hub list / show / add / validate` browse and scaffold them; `cac hub add` is dry-run by default. The registry index `/generated/hub-index.json` is generated + drift-gated. Ships with `standard-hr` and `subscription-billing` example modules.
+- **NL2M (Natural Language to Manifest)** — `cac nl2m "<prose>"` drafts a linked, schema-valid Initiative + Goal + Metric triple from a prose description. Deterministic heuristic parser (domain, direction, target, horizon, collision-free ID allocation), dry-run by default, honest `nl2m: review` markers on every inferred field. See `/docs/nl2m.md`.
+- **Visual Cognition Graph** — `cac generate` emits `/generated/cognition-graph.json` (domains → modules → agents/workflows/metrics + dependency edges); `cac-host graph serve` renders it as an interactive graph overlaid with live audit/event/HITL activity read from the runtime DB. The click-through evolution of the Mermaid diagrams. See `/docs/cognition-graph.md`.
+- **Shadow Mode for agents** — `cac-host shadow enroll <agent>` forces an agent into perpetual `dryRun: true` on every `execute`, recording each invocation as reliability evidence (`ShadowEnrollment` schema). `shadow status` evaluates the accumulated evidence against the AutonomyPolicy's `promotion.fromHumanGatedToAutonomous` bar; `shadow propose` drafts the promotion ADR once the gate clears. See `/docs/shadow-mode.md`.
+
 ### v0.4.0 cycle — schema-driven SDKs, tracing, snapshotting, HITL inbox
 - **Schema-driven SDKs** — the reference CLI projects every JSON Schema into type-safe SDKs (`/generated/sdk/typescript`, `/generated/sdk/python`). A "Company Agent" can be written in any supported language and still type-check against the CaC spec. Drift-gated like every other generated artefact.
 - **Native OpenTelemetry tracing** — the runtime opens a root span per workflow execution and a child span per step. The W3C trace ID is stamped onto both the audit log and the typed-event ledger; `cac-host trace <id>` reads the join back out as one interleaved timeline.

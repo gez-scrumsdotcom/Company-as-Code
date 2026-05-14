@@ -10,6 +10,7 @@ export type { EscalationPolicy } from "./escalation-policy.js";
 export type { EventTypeRegistry } from "./event-type-registry.js";
 export type { Event } from "./event.js";
 export type { Goal } from "./goal.js";
+export type { HubModule } from "./hub-module.js";
 export type { Initiative } from "./initiative.js";
 export type { Integration } from "./integration.js";
 export type { Interface } from "./interface.js";
@@ -17,6 +18,7 @@ export type { ModuleManifest } from "./manifest.js";
 export type { Metric } from "./metric.js";
 export type { Organization } from "./organization.js";
 export type { Person } from "./person.js";
+export type { ShadowEnrollment } from "./shadow-enrollment.js";
 export type { Skill } from "./skill.js";
 export type { StateSnapshot } from "./state-snapshot.js";
 export type { Task } from "./task.js";
@@ -31,6 +33,7 @@ import type { EscalationPolicy as _EscalationPolicy } from "./escalation-policy.
 import type { EventTypeRegistry as _EventTypeRegistry } from "./event-type-registry.js";
 import type { Event as _Event } from "./event.js";
 import type { Goal as _Goal } from "./goal.js";
+import type { HubModule as _HubModule } from "./hub-module.js";
 import type { Initiative as _Initiative } from "./initiative.js";
 import type { Integration as _Integration } from "./integration.js";
 import type { Interface as _Interface } from "./interface.js";
@@ -38,6 +41,7 @@ import type { ModuleManifest as _ModuleManifest } from "./manifest.js";
 import type { Metric as _Metric } from "./metric.js";
 import type { Organization as _Organization } from "./organization.js";
 import type { Person as _Person } from "./person.js";
+import type { ShadowEnrollment as _ShadowEnrollment } from "./shadow-enrollment.js";
 import type { Skill as _Skill } from "./skill.js";
 import type { StateSnapshot as _StateSnapshot } from "./state-snapshot.js";
 import type { Task as _Task } from "./task.js";
@@ -54,6 +58,7 @@ export type CompanyDocument =
   | _EventTypeRegistry
   | _Event
   | _Goal
+  | _HubModule
   | _Initiative
   | _Integration
   | _Interface
@@ -61,6 +66,7 @@ export type CompanyDocument =
   | _Metric
   | _Organization
   | _Person
+  | _ShadowEnrollment
   | _Skill
   | _StateSnapshot
   | _Task

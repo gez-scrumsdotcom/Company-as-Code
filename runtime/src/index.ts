@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import path from "node:path";
+import fs from "node:fs/promises";
 import { loadRepo } from "./loader/repo.js";
 import { SqliteSinks } from "./sinks/sqlite.js";
 import { WorkflowExecutor } from "./executor/runner.js";
@@ -14,6 +15,11 @@ import { SqliteStateStore } from "./state/store.js";
 import { SqliteHitlInbox } from "./hitl/inbox.js";
 import { QueuedApprovalProvider } from "./hitl/queued-approval.js";
 import { startInboxServer } from "./hitl/server.js";
+import { startCognitionServer } from "./cognition/server.js";
+import { SqliteShadowStore } from "./shadow/evidence-store.js";
+import { ShadowAgentInvoker } from "./shadow/shadow-invoker.js";
+import { loadAutonomyPolicy, evaluatePromotion } from "./shadow/evaluate.js";
+import { nextAdrNumber, generateAdrProposal } from "./shadow/adr-proposal.js";
 import { ulid } from "ulid";
 import type { AuditRecord, TypedEvent } from "./types.js";
 
@@ -69,6 +75,17 @@ Usage:
   cac-host inbox approve <itemId> [options]    Approve a pending inbox item.
   cac-host inbox reject <itemId> [options]     Reject a pending inbox item.
   cac-host inbox serve [--port <n>]            Serve the HITL dashboard (default port 4000).
+  cac-host graph serve [--port <n>]            Serve the Visual Cognition Graph (default port 4100).
+  cac-host shadow enroll <agent>               Enroll an agent in Shadow Mode (perpetual dry-run).
+  cac-host shadow withdraw <agent>             Remove an agent from Shadow Mode.
+  cac-host shadow list                         List shadow enrollments with evidence summaries.
+  cac-host shadow status <agent>               Show an agent's reliability evidence + promotion gate.
+  cac-host shadow observe <agent> [options]    Record a human-comparison observation on a shadow run.
+  cac-host shadow propose <agent> [--write]    Draft an ADR promoting a shadow agent to autonomous.
+
+Options for 'shadow observe':
+  --matched <true|false>    Did the agent's projection match the human action? Required.
+  --run <runId>             Target a specific shadow run. Defaults to the most recent un-observed run.
 
 Options for 'inbox approve' / 'inbox reject':
   --approver <canonicalId>  Canonical Person ID of the human deciding. Required.
@@ -186,11 +203,15 @@ async function main(): Promise<void> {
         : inbox
           ? new QueuedApprovalProvider(inbox)
           : new InteractiveApprovalProvider();
+      // Shadow Mode is automatic: agents enrolled in shadow mode are forced to
+      // dry-run and their projections recorded as reliability evidence. For
+      // agents that are not enrolled the wrapper is a transparent pass-through.
+      const shadowStore = new SqliteShadowStore(dbPath);
       const executor = new WorkflowExecutor({
         audit: sinks.audit(),
         events: sinks.events(),
         approval,
-        agents: new ReferenceAgentInvoker(),
+        agents: new ShadowAgentInvoker(new ReferenceAgentInvoker(), shadowStore),
         automations: new ReferenceAutomationInvoker(),
         repo,
       });
@@ -218,6 +239,7 @@ async function main(): Promise<void> {
       } finally {
         sinks.close();
         inbox?.close();
+        shadowStore.close();
       }
       return;
     }
@@ -552,6 +574,236 @@ async function main(): Promise<void> {
         }
       } finally {
         inbox.close();
+      }
+      return;
+    }
+
+    case "graph": {
+      const sub = args.rest[0];
+      if (sub !== "serve") {
+        console.error(`graph: unknown subcommand '${sub ?? ""}' (expected serve)`);
+        process.exit(1);
+      }
+      const port = Number(args.flags.get("port") ?? 4100);
+      const running = await startCognitionServer({ repoRoot, dbPath, port });
+      console.log(`Visual Cognition Graph listening on ${running.url}`);
+      console.log(`  repo:  ${repoRoot}`);
+      console.log(`  db:    ${dbPath}`);
+      console.log(`  structure from ${repoRoot}/generated/cognition-graph.json`);
+      console.log(`  press Ctrl+C to stop.`);
+      // The listening socket keeps the process alive.
+      return;
+    }
+
+    case "shadow": {
+      const sub = args.rest[0];
+      const store = new SqliteShadowStore(dbPath);
+      try {
+        if (sub === "enroll") {
+          const agent = args.rest[1];
+          if (!agent) {
+            console.error("shadow enroll: missing agent name");
+            process.exit(1);
+          }
+          // Confirm the agent is a real declared agent before enrolling.
+          const repo = await loadRepo(repoRoot);
+          if (!repo.agents.has(agent)) {
+            console.error(
+              `shadow enroll: no agent '${agent}' declared in ${repoRoot}/company. ` +
+                `Known agents: ${[...repo.agents.keys()].sort().join(", ") || "(none)"}`,
+            );
+            process.exit(1);
+          }
+          await runInSpan("shadow.enroll", { "cac.agent": agent }, async (tc) => {
+            const enrollment = store.enroll(agent);
+            const sinks = new SqliteSinks(dbPath);
+            try {
+              await recordRuntimeAudit(sinks, tc.traceId, tc.spanId, {
+                action: "shadow.enrolled",
+                status: "success",
+                output: { agent, enrolledAt: enrollment.enrolledAt },
+              });
+              await emitRuntimeEvent(sinks, tc.traceId, tc.spanId, {
+                type: "coordination.agent_shadow_enrolled",
+                entityId: agent,
+                entityKind: "agent",
+                payload: { enrolledAt: enrollment.enrolledAt },
+              });
+            } finally {
+              sinks.close();
+            }
+            console.log(`✓ ${agent} enrolled in Shadow Mode (perpetual dry-run) at ${enrollment.enrolledAt}`);
+            console.log(`  it will accumulate reliability evidence on every 'cac-host execute' run.`);
+            console.log(`  traceId: ${tc.traceId}`);
+          });
+        } else if (sub === "withdraw") {
+          const agent = args.rest[1];
+          if (!agent) {
+            console.error("shadow withdraw: missing agent name");
+            process.exit(1);
+          }
+          try {
+            const e = store.setStatus(agent, "withdrawn");
+            console.log(`✓ ${agent} withdrawn from Shadow Mode (${e.statusChangedAt}). Evidence is retained.`);
+          } catch (err) {
+            console.error(`shadow withdraw: ${(err as Error).message}`);
+            process.exit(1);
+          }
+        } else if (sub === "list") {
+          const enrollments = store.listEnrollments();
+          if (enrollments.length === 0) {
+            console.log("(no agents enrolled in shadow mode)");
+            return;
+          }
+          for (const e of enrollments) {
+            const ev = store.evidence(e.agent);
+            console.log(
+              `${e.status.padEnd(10)} ${e.agent.padEnd(28)} ${ev.shadowDays}d  ` +
+                `${ev.totalRuns} runs  ${ev.observedRuns} observed  ` +
+                `${(ev.agreementRate * 100).toFixed(0)}% agreement`,
+            );
+          }
+        } else if (sub === "status") {
+          const agent = args.rest[1];
+          if (!agent) {
+            console.error("shadow status: missing agent name");
+            process.exit(1);
+          }
+          let ev;
+          try {
+            ev = store.evidence(agent);
+          } catch (err) {
+            console.error(`shadow status: ${(err as Error).message}`);
+            process.exit(1);
+          }
+          const policy = await loadAutonomyPolicy(repoRoot);
+          const evaluation = evaluatePromotion(ev, policy);
+          console.log(`Shadow Mode — ${agent}  [${ev.status}]`);
+          console.log(`  enrolled:        ${ev.enrolledAt}`);
+          console.log(`  shadowing for:   ${ev.shadowDays} day(s)`);
+          console.log(`  total runs:      ${ev.totalRuns}`);
+          console.log(`  observed runs:   ${ev.observedRuns}`);
+          console.log(`  matched human:   ${ev.matchedRuns}`);
+          console.log(`  agreement rate:  ${(ev.agreementRate * 100).toFixed(1)}%`);
+          console.log(`  distinct traces: ${ev.distinctTraces}`);
+          console.log(`\n  promotion gate (from AutonomyPolicy.promotion.fromHumanGatedToAutonomous):`);
+          for (const r of evaluation.requirements) {
+            if (r.kind === "auto") {
+              console.log(
+                `    [${r.met ? "✓" : " "}] ${r.key}  ${r.comparator} ${r.threshold}  (actual: ${r.actual})`,
+              );
+            } else if (r.kind === "manual") {
+              console.log(`    [ ] ${r.key}  — manual: ${r.note}`);
+            } else {
+              console.log(`    [?] ${r.key}  — ${r.note}`);
+            }
+          }
+          console.log(
+            `\n  automated gate: ${evaluation.autoMet ? "MET — run 'cac-host shadow propose " + agent + "'" : "NOT MET — unmet: " + evaluation.unmetAuto.join(", ")}`,
+          );
+        } else if (sub === "observe") {
+          const agent = args.rest[1];
+          if (!agent) {
+            console.error("shadow observe: missing agent name");
+            process.exit(1);
+          }
+          const matchedRaw = flagStr(args, "matched");
+          if (matchedRaw !== "true" && matchedRaw !== "false") {
+            console.error("shadow observe: --matched <true|false> is required");
+            process.exit(1);
+          }
+          const runId = flagStr(args, "run");
+          try {
+            const run = store.observe(agent, matchedRaw === "true", runId);
+            console.log(
+              `✓ recorded observation on shadow run ${run.id}: projection ${run.matchedHuman ? "MATCHED" : "DID NOT MATCH"} the human action`,
+            );
+          } catch (err) {
+            console.error(`shadow observe: ${(err as Error).message}`);
+            process.exit(1);
+          }
+        } else if (sub === "propose") {
+          const agent = args.rest[1];
+          if (!agent) {
+            console.error("shadow propose: missing agent name");
+            process.exit(1);
+          }
+          const write = args.flags.get("write") === true;
+          let ev;
+          try {
+            ev = store.evidence(agent);
+          } catch (err) {
+            console.error(`shadow propose: ${(err as Error).message}`);
+            process.exit(1);
+          }
+          const policy = await loadAutonomyPolicy(repoRoot);
+          const evaluation = evaluatePromotion(ev, policy);
+          if (!evaluation.autoMet) {
+            console.error(
+              `✗ shadow propose: ${agent} has not cleared the automated promotion gate.\n` +
+                `  unmet: ${evaluation.unmetAuto.join(", ")}\n` +
+                `  run 'cac-host shadow status ${agent}' for the full breakdown.`,
+            );
+            process.exit(1);
+          }
+          const repo = await loadRepo(repoRoot);
+          const agentDecl = repo.agents.get(agent);
+          const number = await nextAdrNumber(repoRoot);
+          const today = new Date().toISOString().slice(0, 10);
+          const proposal = generateAdrProposal({
+            agent,
+            agentModule: agentDecl?.module,
+            evidence: ev,
+            evaluation,
+            number,
+            today,
+          });
+          console.log(`shadow propose ${agent} — automated promotion gate MET`);
+          console.log(`  ${write ? "WRITING" : "DRY-RUN — no file written"}: ${proposal.file}\n`);
+          console.log(proposal.content);
+          if (!write) {
+            console.log(`\nRe-run with --write to create the ADR draft.`);
+            return;
+          }
+          const abs = path.join(repoRoot, proposal.file);
+          try {
+            await fs.stat(abs);
+            console.error(`✗ shadow propose: ${proposal.file} already exists. Refusing to overwrite.`);
+            process.exit(1);
+          } catch {
+            /* good — does not exist */
+          }
+          await fs.mkdir(path.dirname(abs), { recursive: true });
+          await fs.writeFile(abs, proposal.content, "utf8");
+          await runInSpan("shadow.propose", { "cac.agent": agent }, async (tc) => {
+            const sinks = new SqliteSinks(dbPath);
+            try {
+              await recordRuntimeAudit(sinks, tc.traceId, tc.spanId, {
+                action: "shadow.promotion_proposed",
+                status: "success",
+                output: { agent, adr: proposal.file, evidence: ev },
+              });
+              await emitRuntimeEvent(sinks, tc.traceId, tc.spanId, {
+                type: "coordination.agent_promotion_proposed",
+                entityId: agent,
+                entityKind: "agent",
+                payload: { adr: proposal.file, agreementRate: ev.agreementRate },
+              });
+            } finally {
+              sinks.close();
+            }
+            console.log(`\n✓ wrote ${proposal.file}`);
+            console.log(`  next: review it, add a row to docs/adr/README.md, set the agent's manifest`);
+            console.log(`        autonomy to 'autonomous', and merge. traceId: ${tc.traceId}`);
+          });
+        } else {
+          console.error(
+            `shadow: unknown subcommand '${sub ?? ""}' (expected enroll | withdraw | list | status | observe | propose)`,
+          );
+          process.exit(1);
+        }
+      } finally {
+        store.close();
       }
       return;
     }

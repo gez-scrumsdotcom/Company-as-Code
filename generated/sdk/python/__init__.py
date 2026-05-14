@@ -10,6 +10,7 @@ from .escalation_policy import EscalationPolicy as EscalationPolicy
 from .event_type_registry import EventTypeRegistry as EventTypeRegistry
 from .event import Event as Event
 from .goal import Goal as Goal
+from .hub_module import HubModule as HubModule
 from .initiative import Initiative as Initiative
 from .integration import Integration as Integration
 from .interface import Interface as Interface
@@ -17,6 +18,7 @@ from .manifest import ModuleManifest as ModuleManifest
 from .metric import Metric as Metric
 from .organization import Organization as Organization
 from .person import Person as Person
+from .shadow_enrollment import ShadowEnrollment as ShadowEnrollment
 from .skill import Skill as Skill
 from .state_snapshot import StateSnapshot as StateSnapshot
 from .task import Task as Task
@@ -32,6 +34,7 @@ __all__ = [
     "EventTypeRegistry",
     "Event",
     "Goal",
+    "HubModule",
     "Initiative",
     "Integration",
     "Interface",
@@ -39,6 +42,7 @@ __all__ = [
     "Metric",
     "Organization",
     "Person",
+    "ShadowEnrollment",
     "Skill",
     "StateSnapshot",
     "Task",

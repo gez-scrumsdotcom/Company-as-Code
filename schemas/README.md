@@ -28,6 +28,8 @@ CI validates every manifest, agent, workflow, task, and registry artefact agains
 | [`autonomy-policy.schema.json`](./autonomy-policy.schema.json) | Runtime expression of the three autonomy classes + promotion path + preflight checks |
 | [`escalation-policy.schema.json`](./escalation-policy.schema.json) | Severity SLAs, on-call role bindings, vendor-neutral channel routing |
 | [`state-snapshot.schema.json`](./state-snapshot.schema.json) | Versioned checkpoint of canonical state — canonical entity IDs + evolving system mappings — for rollback to a known-good state |
+| [`hub-module.schema.json`](./hub-module.schema.json) | CaC-Hub module metadata — a community-contributed, importable bundle of a validated payload (manifest, workflows, agents, policies) |
+| [`shadow-enrollment.schema.json`](./shadow-enrollment.schema.json) | An agent's Shadow Mode enrollment plus accumulated Reliability Evidence — the basis for an automated promotion-to-autonomous ADR |
 
 ## Schema-driven SDKs
 
