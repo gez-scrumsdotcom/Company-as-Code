@@ -4,11 +4,18 @@ What's in the framework today, what's coming, and what's intentionally NOT in sc
 
 This file is updated through PRs like any other artefact. Disagreements about scope go through an ADR.
 
-> **Snapshot date:** 2026-05-13 (post-PR #3 / pre-PR #4)
+> **Snapshot date:** 2026-05-14 (post canonical-state-ladder docs)
 
 ---
 
 ## Shipped (in main)
+
+### v0.4.0 cycle — schema-driven SDKs, tracing, snapshotting, HITL inbox
+- **Schema-driven SDKs** — the reference CLI projects every JSON Schema into type-safe SDKs (`/generated/sdk/typescript`, `/generated/sdk/python`). A "Company Agent" can be written in any supported language and still type-check against the CaC spec. Drift-gated like every other generated artefact.
+- **Native OpenTelemetry tracing** — the runtime opens a root span per workflow execution and a child span per step. The W3C trace ID is stamped onto both the audit log and the typed-event ledger; `cac-host trace <id>` reads the join back out as one interleaved timeline.
+- **Versioned state snapshotting** — `cac-host snapshot create / list / show / rollback` checkpoints the entire canonical state (canonical IDs + system mappings) into a content-hashed row and atomically restores it. The append-only ledgers are never rewound; a rollback is itself an event.
+- **Native HITL inbox + dashboard** — `--queue-approvals` routes `human-approval` steps through a durable inbox; humans resolve dry-run projections from the CLI or the `cac-host inbox serve` web dashboard, with their canonical Person ID recorded.
+- New schema: `StateSnapshot`. New event types: `coordination.state_snapshot_created`, `coordination.state_rolled_back`. `AuditRecord` + `Event` gained `traceId` / `spanId`.
 
 ### v0.1.0 — initial seed
 - Canonical specification, JSON Schemas for 13 primitives, `/company` scaffold, worked examples in finance / platform / growth, reference TypeScript CLI, CI workflows, architecture + standards + glossary + ADR-0001.

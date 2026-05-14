@@ -73,6 +73,16 @@ events:
     emittingModule: company/runtime
     status: stable
 
+  - type: coordination.state_snapshot_created
+    description: A versioned checkpoint of the canonical state (canonical IDs + system mappings) was captured.
+    emittingModule: company/runtime
+    status: stable
+
+  - type: coordination.state_rolled_back
+    description: The live canonical state was atomically restored to a prior snapshot. The audit + event ledgers are not rewound; this event records the roll-forward.
+    emittingModule: company/runtime
+    status: stable
+
   - type: runtime.incident_declared
     description: A new incident was opened. Carries severity and incident commander.
     emittingModule: company/runtime

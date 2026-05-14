@@ -1,7 +1,8 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import { GENERATED_DIR } from "./paths.js";
-import { loadCorpus, type RepoCorpus } from "./loader.js";
+import { loadCorpus, loadSchemas, type RepoCorpus } from "./loader.js";
+import { sdkFiles } from "./sdk.js";
 
 interface GenerateOptions {
   check: boolean;
@@ -15,6 +16,7 @@ interface GeneratedFile {
 
 export async function generateCommand(opts: GenerateOptions): Promise<boolean> {
   const corpus = await loadCorpus();
+  const schemas = await loadSchemas();
   const files: GeneratedFile[] = [
     agentCatalogue(corpus),
     flowRegistry(corpus),
@@ -23,6 +25,7 @@ export async function generateCommand(opts: GenerateOptions): Promise<boolean> {
     skillIndex(corpus),
     ...contextBundles(corpus),
     ...skillAdapters(corpus),
+    ...sdkFiles(schemas),
   ];
 
   if (opts.check) {

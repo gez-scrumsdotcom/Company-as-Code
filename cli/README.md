@@ -22,6 +22,7 @@ npm run test:e2e         # validate + drift gate against the whole seed
   - `/generated/dependency-graph.json` — module-to-module interface dependencies
   - `/generated/domain-model.json` — module ownership of tables and schemas
   - `/generated/context-bundles/<module>__<agent>.json` — one bundle per agent with resolved read/write access, tools, canonical events, HITL constraints, and observability surfaces (per the spec's "structured context bundles for agents")
+  - `/generated/sdk/typescript/*.ts` + `/generated/sdk/python/*.py` — schema-driven SDKs: a type-safe surface per JSON Schema, so a "Company Agent" can be written in any supported language and still type-check against the CaC spec (see `src/sdk.ts` and `/generated/sdk/README.md`)
 
 Generators sort their outputs by stable keys. Identical inputs produce byte-identical outputs.
 
@@ -35,4 +36,5 @@ Generators sort their outputs by stable keys. Identical inputs produce byte-iden
 - `src/loader.ts` — schema + corpus loader
 - `src/validate.ts` — schema validation + cross-doc discipline checks
 - `src/generate.ts` — generators + drift checker
+- `src/sdk.ts` — schema-driven SDK generator (TypeScript + Python emitters)
 - `src/paths.ts` — repo-relative path helpers

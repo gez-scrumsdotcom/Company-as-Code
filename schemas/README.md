@@ -27,6 +27,16 @@ CI validates every manifest, agent, workflow, task, and registry artefact agains
 | [`event-type-registry.schema.json`](./event-type-registry.schema.json) | The enum-controlled registry of typed event names — one document for the company |
 | [`autonomy-policy.schema.json`](./autonomy-policy.schema.json) | Runtime expression of the three autonomy classes + promotion path + preflight checks |
 | [`escalation-policy.schema.json`](./escalation-policy.schema.json) | Severity SLAs, on-call role bindings, vendor-neutral channel routing |
+| [`state-snapshot.schema.json`](./state-snapshot.schema.json) | Versioned checkpoint of canonical state — canonical entity IDs + evolving system mappings — for rollback to a known-good state |
+
+## Schema-driven SDKs
+
+The schemas are the single source of truth, so the reference CLI projects them
+into type-safe SDKs under [`/generated/sdk`](../generated/sdk) — TypeScript
+interfaces and Python `TypedDict`s, one per schema. A "Company Agent" can be
+written in any supported language and still type-check against the CaC spec.
+`cac generate --check` gates SDK drift exactly like every other generated
+artefact. See [`/generated/sdk/README.md`](../generated/sdk/README.md).
 
 ## Conventions
 
