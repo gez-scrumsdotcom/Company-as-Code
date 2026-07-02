@@ -12,6 +12,7 @@ permissions:
   contents: read
   security-events: write    # CodeQL writes findings into the Security tab
   actions: read             # CodeQL inspects workflow runs for context
+  pull-requests: read       # gitleaks lists the PR's commits to scope the scan (comments stay disabled)
 
 jobs:
   secret-scan:
