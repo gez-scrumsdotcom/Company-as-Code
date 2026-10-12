@@ -166,7 +166,7 @@
       "docs/nl2m.md": "42d307eeef8b012b56381665da1638876e1fdb3d211214985477165cfd8b08cc",
       "docs/plans/seed-build.md": "c5a1bf3facbe2014a54e988314fbbca6d9d0851d9b423440fabda845f6be6f87",
       "docs/release-checklist.md": "1ee33c0f544fec699a961a8d8989a63b8481af66f89a1ddc2bf4517234de26cd",
-      "docs/roadmap.md": "4954faa53c044b4d512373462a735e242d2feb61c47b61b96f749ca8739cb6ff",
+      "docs/roadmap.md": "e8b7b534b5d4e0acd6b2c7cb74dd8bbedfb50689b80cd58472a5fbf281754261",
       "docs/scenarios/README.md": "25c4ff5bfea860274481fcba5159c2f0f6c582559baba1c87def8f60a8af81df",
       "docs/scenarios/launching-a-growth-experiment.md": "07fa6c3a5992fb8d9e226e5cfc4f57d53eca0ee104896a839e40983619ec6bb4",
       "docs/scenarios/monthly-close.md": "f47ede0aed7afae117372daa331c6a5b464128d45645d1bfead78f019fb8bdc3",
@@ -289,8 +289,8 @@
       ".github/workflows/security.yml": "e8d47ced03ac9f6909091f8e2b7cb20416e96d4f2b7acd21085cb46d94cbceb4",
       ".github/workflows/validate.yml": "cb2da42f578791f979f92b19f7ea93eb89f9a951e19eb3ecc4acf3ca66460753",
       ".gitignore": "27fbe73fb6a9a58c1058e85b8c0357fbb3203a4f782fb9e18dafa40ff13bce81",
-      "AGENTS.md": "1f4707a2e6b9403630f007d554c5510c5b7905c032f20a2a325d49da8f1c68c3",
-      "README.md": "eeddad59e668883bdff67f42283f2396683af4a1047fca0e0fddc4831995a829"
+      "AGENTS.md": "43372b980627b76175583c3eea543a81f7d23bdc36eb7dfc6ea8911b4bcfebf6",
+      "README.md": "da771401296ce110a4f188b5e680d198f338f44cab11cb250cdba4afd72c0766"
     }
   }
 }
