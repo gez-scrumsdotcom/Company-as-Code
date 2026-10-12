@@ -64,6 +64,21 @@ change, at any stage. It ships, in the same pull request, with:
 `cac validate` names any document on an older version and points at
 `cac migrate`.
 
+## Release numbers
+
+Framework releases follow semantic versioning, with the 0.x reading that
+semantic versioning itself allows: before 1.0.0, a breaking change is a
+**minor** release.
+
+- A breaking change to document shape, which always ships with a migration
+  and a new document version, is **minor** while the framework is 0.x and
+  **major** after 1.0.0.
+- New optional fields or new primitives are **minor**.
+- Tooling and documentation fixes are **patch**.
+
+The framework reaches 1.0.0 no earlier than the document version reaches
+stable.
+
 ## What counts as compatible
 
 Within one document version, these are allowed without a migration:
