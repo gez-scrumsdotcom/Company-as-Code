@@ -1,5 +1,5 @@
 {
-  "edgeCount": 166,
+  "edgeCount": 167,
   "edges": [
     {
       "from": "Agent:billing-reconciler",
@@ -734,6 +734,12 @@
       "to": "Party:person:ceo"
     },
     {
+      "from": "Proposal:PROP-0004",
+      "origin": "reference",
+      "relation": "author",
+      "to": "Party:person:ceo"
+    },
+    {
       "from": "Requirement:REQ-EU-AI-ACT-ART-14",
       "origin": "reference",
       "relation": "owner",
@@ -1000,7 +1006,7 @@
   ],
   "edgesByRelation": {
     "appliesTo[]": 5,
-    "author": 2,
+    "author": 3,
     "automation.workflow": 1,
     "consumes[].from": 21,
     "contains": 15,
@@ -1026,7 +1032,7 @@
     "steps[].automation": 4
   },
   "generatedFrom": "/company/**/*.yaml + x-cac-ref annotations in /schemas",
-  "nodeCount": 90,
+  "nodeCount": 91,
   "nodes": [
     {
       "file": "company/domains/product-operations/platform/agents/billing-reconciler.yaml",
@@ -1477,6 +1483,12 @@
       "label": "Declare and enforce the framework/instance boundary, and make upgrades a supported operation"
     },
     {
+      "file": "company/proposals/PROP-0004-fork-namespacing.yaml",
+      "id": "Proposal:PROP-0004",
+      "kind": "Proposal",
+      "label": "Namespace everything a fork creates next to upstream"
+    },
+    {
       "file": "company/requirements/REQ-EU-AI-ACT-ART-14.yaml",
       "id": "Requirement:REQ-EU-AI-ACT-ART-14",
       "kind": "Requirement",
@@ -1601,7 +1613,7 @@
     "Organization": 1,
     "Party": 11,
     "Person": 1,
-    "Proposal": 2,
+    "Proposal": 3,
     "Requirement": 7,
     "Skill": 5,
     "Task": 1,

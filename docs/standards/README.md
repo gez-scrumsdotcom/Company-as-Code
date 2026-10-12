@@ -16,3 +16,4 @@ Engineering and operational standards. Versioned, reviewable, enforceable. If a 
 | [`conserved-core.md`](./conserved-core.md) | Which paths change only through a Proposal, and how that is enforced |
 | [`policy-to-control-matrix.md`](./policy-to-control-matrix.md) | Every declared rule mapped to its enforcement location (schema / CI / runtime / discipline) |
 | [`framework-boundary.md`](./framework-boundary.md) | Which paths belong to the framework and which to the company; what a fork may change |
+| [`fork-namespacing.md`](./fork-namespacing.md) | Where a fork's decisions and hub modules live so they never collide with upstream's |

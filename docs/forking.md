@@ -16,7 +16,7 @@ Company-as-Code separates **framework-level** content (rarely edited in a fork) 
 | `/runtime/` | Optional, reference runtime host. Replace pluggable invokers (`AgentInvoker`, `AutomationInvoker`, `ApprovalProvider`) with your real implementations, or write your own runtime against the same schemas |
 | `/docs/spec/company-as-code-spec.md` | Treat as upstream, don't edit; track upstream changes |
 | `/docs/standards/`, `/docs/architecture.md` | Edit if your fork changes a standard (record via ADR) |
-| `/docs/adr/` | Add your own ADRs as `0010-…`, `0011-…` (leave 0001-0004 in place as bootstrap history) |
+| `/docs/adr/` | No. These are upstream's decisions. Record your own in `/company/decisions/`, numbered from `0001`, so the two sequences never collide. See [`fork-namespacing.md`](./standards/fork-namespacing.md) |
 | `/company/**` | **Yes**. This is your company; replace everything under here |
 | `/company/requirements/`, `/company/controls/` | **Yes**, and start small. One real obligation with one real control beats a full framework mapping nobody maintains |
 | `/company/capabilities/` | **Yes**. Start with the two or three functions whose loss would hurt most |
