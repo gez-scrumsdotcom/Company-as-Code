@@ -9,6 +9,8 @@ import { hubCommand } from "./hub.js";
 import { nl2mFromArgv } from "./nl2m.js";
 import { doctorCommand } from "./doctor.js";
 import { boundaryCheckCommand, boundaryExplainCommand, initCommand } from "./boundary.js";
+import { upgradeCommand } from "./upgrade.js";
+import { migrateCommand } from "./migrate.js";
 
 async function main() {
   const [, , cmd, ...rest] = process.argv;
@@ -70,6 +72,32 @@ async function main() {
       process.exit(ok ? 0 : 1);
       break;
     }
+    case "upgrade": {
+      const parsed = strictParse("upgrade", rest, {
+        from: { type: "string" },
+        write: { type: "boolean" },
+        "allow-conflicts": { type: "boolean" },
+      });
+      if (!parsed) process.exit(2);
+      if (typeof parsed.values.from !== "string") {
+        console.error("Usage: cac upgrade --from <path-to-upstream-release> [--write] [--allow-conflicts]");
+        process.exit(2);
+      }
+      const ok = await upgradeCommand({
+        from: parsed.values.from,
+        write: parsed.values.write === true,
+        allowConflicts: parsed.values["allow-conflicts"] === true,
+      });
+      process.exit(ok ? 0 : 1);
+      break;
+    }
+    case "migrate": {
+      const parsed = strictParse("migrate", rest, { write: { type: "boolean" } });
+      if (!parsed) process.exit(2);
+      const ok = await migrateCommand({ write: parsed.values.write === true });
+      process.exit(ok ? 0 : 1);
+      break;
+    }
     case "nl2m": {
       const ok = await nl2mFromArgv(rest);
       process.exit(ok ? 0 : 1);
@@ -125,6 +153,9 @@ Usage:
                             Say which boundary class a path belongs to, and what that means.
   cac init --name "<Company>" --namespace <prefix> [--write]
                             Declare this tree a fork in cac.yaml (dry-run unless --write).
+  cac upgrade --from <path> [--write] [--allow-conflicts]
+                            In a fork: take a new upstream release, replacing only framework files the fork never touched.
+  cac migrate [--write]     Move instance documents to the current apiVersion (dry-run unless --write).
   cac nl2m "<prose>"        Draft a linked Initiative + Goal + Metric from a prose description (dry-run).
   cac nl2m --file <path>    Read the prose from a file instead of an argument.
   cac nl2m "<prose>" --write [--owner <id>]

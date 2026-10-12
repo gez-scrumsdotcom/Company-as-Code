@@ -50,14 +50,19 @@ That's the minimum. Everything else is incremental.
 
 ## How to absorb upstream changes
 
-Track the upstream `gez-scrumsdotcom/Company-as-Code` repo. When a framework-level change lands upstream:
+Don't merge upstream. Upgrade from it.
 
-- Schema additions: usually safe to take wholesale. Re-validate your `/company/` content; new optional fields are backwards compatible.
-- Schema deletions: never silent: they ship with an ADR and a deprecation window. Take action within the window.
-- Generator changes: regenerate `/generated/` and commit; the drift gate will tell you if anything broke.
-- Standards changes: read the ADR; adapt your fork's standards if needed.
+Your fork's `framework.lock.json` records exactly which framework release you
+are on. `cac upgrade --from <release checkout>` compares that lock, the new
+release's lock, and your files, then replaces only the framework files you
+never touched. Anything you did touch stops the upgrade with a named reason.
+`cac migrate` then moves your `company/` documents to the new format.
 
-A reasonable cadence is to merge upstream monthly and have a regular reviewer for the framework diff.
+The full walkthrough, including how to resolve a conflict, is in
+[`upgrading.md`](./upgrading.md).
+
+A reasonable cadence is to upgrade on every minor release, and to keep the
+list of declared deviations in `cac.yaml` short enough to read in one sitting.
 
 ---
 
