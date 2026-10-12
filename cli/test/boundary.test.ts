@@ -57,6 +57,8 @@ describe("boundary classification", () => {
     expect(classify(LOCK_FILE, upstream)).toBe("derived");
     expect(classify("schemas/agent.schema.json", upstream)).toBe("framework");
     expect(classify("README.md", upstream)).toBe("adapt");
+    expect(classify("docs/governance/stewardship.md", upstream)).toBe("instance");
+    expect(classify("docs/governance.md", upstream)).toBe("framework");
     expect(classify("somewhere-new.txt", upstream)).toBeNull();
   });
 

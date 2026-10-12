@@ -19,8 +19,12 @@ Every file in the repository belongs to exactly one class.
 |---|---|---|---|
 | **framework** | upstream | replaces it | `schemas/`, `cli/`, `runtime/`, `templates/`, `docs/`, `hub/`, `conformance/` |
 | **adapt** | upstream starts it, the fork edits it | tells you upstream changed it; never overwrites | `README.md`, `AGENTS.md`, `.github/` |
-| **instance** | the fork | never touches it | `company/`, `cac.yaml`, `GOVERNANCE.md`, `CHANGELOG.md` |
+| **instance** | the fork | never touches it | `company/`, `cac.yaml`, `GOVERNANCE.md`, `docs/governance/`, `CHANGELOG.md` |
 | **derived** | nobody; it is regenerated | regenerates it | `generated/`, `framework.lock.json` |
+
+`docs/governance/` is the one instance path inside `docs/`. It describes who
+stewards this particular tree, which is not something a fork inherits from
+upstream. A fork rewrites it or deletes it.
 
 The authoritative list is `BOUNDARY` in
 [`cli/src/boundary.ts`](../../cli/src/boundary.ts). Ask about any path with:

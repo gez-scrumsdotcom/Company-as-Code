@@ -42,6 +42,7 @@ export const BOUNDARY: Record<PathClass, string[]> = {
   instance: [
     "company/**",
     "cac.yaml",
+    "docs/governance/**",
     "CHANGELOG.md",
     "CITATION.cff",
     "CODE_OF_CONDUCT.md",
