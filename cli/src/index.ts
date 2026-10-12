@@ -12,6 +12,7 @@ import { boundaryCheckCommand, boundaryExplainCommand, initCommand } from "./bou
 import { upgradeCommand } from "./upgrade.js";
 import { migrateCommand } from "./migrate.js";
 import { conformanceCommand, verdictCommand } from "./conformance.js";
+import { importAcceptCommand, importDraftCommand, importListCommand } from "./import.js";
 
 async function main() {
   const [, , cmd, ...rest] = process.argv;
@@ -114,6 +115,32 @@ async function main() {
       process.exit(ok ? 0 : 1);
       break;
     }
+    case "import": {
+      const [sub, ...args] = rest;
+      if (sub === "list") process.exit((await importListCommand()) ? 0 : 1);
+      if (sub === "accept") {
+        const parsed = strictParse("import accept", args, { into: { type: "string" }, write: { type: "boolean" } }, true);
+        if (!parsed || parsed.positionals.length !== 1) {
+          console.error("Usage: cac import accept <importer> [--into <company/...>] [--write]");
+          process.exit(2);
+        }
+        const into = typeof parsed.values.into === "string" ? parsed.values.into : "company/integrations/seeds";
+        const ok = await importAcceptCommand(parsed.positionals[0]!, { into, write: parsed.values.write === true });
+        process.exit(ok ? 0 : 1);
+      }
+      if (sub) {
+        const parsed = strictParse("import", args, { file: { type: "string" }, write: { type: "boolean" } });
+        if (!parsed || typeof parsed.values.file !== "string") {
+          console.error("Usage: cac import <importer> --file <path> [--write]");
+          process.exit(2);
+        }
+        const ok = await importDraftCommand(sub, { file: parsed.values.file, write: parsed.values.write === true });
+        process.exit(ok ? 0 : 1);
+      }
+      console.error("Usage: cac import list | cac import <importer> --file <path> [--write] | cac import accept <importer>");
+      process.exit(2);
+      break;
+    }
     case "nl2m": {
       const ok = await nl2mFromArgv(rest);
       process.exit(ok ? 0 : 1);
@@ -176,6 +203,11 @@ Usage:
                             Run the conformance suite against the reference implementation, or any command.
   cac conformance verdict <case-dir>
                             Print the reference implementation's verdict on one case, in the protocol's JSON.
+  cac import list           List importers that draft documents from existing sources.
+  cac import <importer> --file <path> [--write]
+                            Draft documents into company/.drafts/<importer>/ (never into the graph).
+  cac import accept <importer> [--into <company/...>] [--write]
+                            Validate drafts and move them into the company graph, still 'proposed'.
   cac nl2m "<prose>"        Draft a linked Initiative + Goal + Metric from a prose description (dry-run).
   cac nl2m --file <path>    Read the prose from a file instead of an argument.
   cac nl2m "<prose>" --write [--owner <id>]
