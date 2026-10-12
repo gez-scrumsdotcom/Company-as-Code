@@ -98,6 +98,13 @@ company's source of truth.
 That last one is load-bearing. Model names in canonical documents are the
 fastest way to build something that is stale within a quarter.
 
+## Conformance
+
+A second implementation is only interoperable if it agrees with the first on
+what is valid. The cases in [`/conformance`](../conformance) define that
+agreement, and `cac conformance --impl "<command>"` measures any
+implementation against them.
+
 ## See also
 
 - [`/schemas/README.md`](../schemas/README.md)

@@ -1,5 +1,5 @@
 {
-  "edgeCount": 168,
+  "edgeCount": 169,
   "edges": [
     {
       "from": "Agent:billing-reconciler",
@@ -746,6 +746,12 @@
       "to": "Party:person:ceo"
     },
     {
+      "from": "Proposal:PROP-0005",
+      "origin": "reference",
+      "relation": "author",
+      "to": "Party:person:ceo"
+    },
+    {
       "from": "Requirement:REQ-EU-AI-ACT-ART-14",
       "origin": "reference",
       "relation": "owner",
@@ -1012,7 +1018,7 @@
   ],
   "edgesByRelation": {
     "appliesTo[]": 5,
-    "author": 4,
+    "author": 5,
     "automation.workflow": 1,
     "consumes[].from": 21,
     "contains": 15,
@@ -1038,7 +1044,7 @@
     "steps[].automation": 4
   },
   "generatedFrom": "/company/**/*.yaml + x-cac-ref annotations in /schemas",
-  "nodeCount": 92,
+  "nodeCount": 93,
   "nodes": [
     {
       "file": "company/domains/product-operations/platform/agents/billing-reconciler.yaml",
@@ -1501,6 +1507,12 @@
       "label": "Namespace everything a fork creates next to upstream"
     },
     {
+      "file": "company/proposals/PROP-0005-conformance-suite.yaml",
+      "id": "Proposal:PROP-0005",
+      "kind": "Proposal",
+      "label": "Define correct behaviour as a conformance suite that any implementation can run"
+    },
+    {
       "file": "company/requirements/REQ-EU-AI-ACT-ART-14.yaml",
       "id": "Requirement:REQ-EU-AI-ACT-ART-14",
       "kind": "Requirement",
@@ -1625,7 +1637,7 @@
     "Organization": 1,
     "Party": 11,
     "Person": 1,
-    "Proposal": 4,
+    "Proposal": 5,
     "Requirement": 7,
     "Skill": 5,
     "Task": 1,

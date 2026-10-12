@@ -11,6 +11,7 @@ import { doctorCommand } from "./doctor.js";
 import { boundaryCheckCommand, boundaryExplainCommand, initCommand } from "./boundary.js";
 import { upgradeCommand } from "./upgrade.js";
 import { migrateCommand } from "./migrate.js";
+import { conformanceCommand, verdictCommand } from "./conformance.js";
 
 async function main() {
   const [, , cmd, ...rest] = process.argv;
@@ -98,6 +99,21 @@ async function main() {
       process.exit(ok ? 0 : 1);
       break;
     }
+    case "conformance": {
+      if (rest[0] === "verdict") {
+        if (rest.length !== 2) {
+          console.error("Usage: cac conformance verdict <case-dir>");
+          process.exit(2);
+        }
+        process.exit((await verdictCommand(rest[1]!)) ? 0 : 1);
+      }
+      const parsed = strictParse("conformance", rest, { impl: { type: "string" }, json: { type: "boolean" } });
+      if (!parsed) process.exit(2);
+      const impl = typeof parsed.values.impl === "string" ? parsed.values.impl : undefined;
+      const ok = await conformanceCommand({ impl, json: parsed.values.json === true });
+      process.exit(ok ? 0 : 1);
+      break;
+    }
     case "nl2m": {
       const ok = await nl2mFromArgv(rest);
       process.exit(ok ? 0 : 1);
@@ -156,6 +172,10 @@ Usage:
   cac upgrade --from <path> [--write] [--allow-conflicts]
                             In a fork: take a new upstream release, replacing only framework files the fork never touched.
   cac migrate [--write]     Move instance documents to the current apiVersion (dry-run unless --write).
+  cac conformance [--impl "<command>"] [--json]
+                            Run the conformance suite against the reference implementation, or any command.
+  cac conformance verdict <case-dir>
+                            Print the reference implementation's verdict on one case, in the protocol's JSON.
   cac nl2m "<prose>"        Draft a linked Initiative + Goal + Metric from a prose description (dry-run).
   cac nl2m --file <path>    Read the prose from a file instead of an argument.
   cac nl2m "<prose>" --write [--owner <id>]

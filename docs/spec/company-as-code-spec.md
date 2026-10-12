@@ -370,6 +370,11 @@ Every path belongs to exactly one class: **framework**, **adapt**,
 knowingly, and changes a framework file only as a declared deviation. The
 classes and the checks are in `docs/standards/framework-boundary.md`.
 
+`/conformance` holds the cases that define a correct implementation. The
+reference CLI is held to them like any other implementation; when the CLI and
+a case disagree, the disagreement is resolved by changing one of them on
+purpose, never by assuming the CLI is right.
+
 ---
 
 ## MODULAR MONOLITH DISCIPLINE
