@@ -20,7 +20,7 @@ export interface Proposal {
   targets: Array<{
     /** Repo-relative path of the conserved file. */
     path: string;
-    surface: "spec" | "standard" | "schema" | "policy" | "autonomy-policy" | "escalation-policy" | "adr" | "manifest" | "control" | "requirement";
+    surface: "spec" | "standard" | "schema" | "policy" | "autonomy-policy" | "escalation-policy" | "adr" | "manifest" | "control" | "requirement" | "ci" | "governance";
     /** One line on what changes in this file. */
     change?: string;
   }>;

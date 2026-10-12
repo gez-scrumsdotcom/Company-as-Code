@@ -14,7 +14,7 @@ class ProposalAuthor(TypedDict):
 class ProposalTargetsItem(TypedDict):
     """Repo-relative path of the conserved file."""
     path: str
-    surface: Literal["spec", "standard", "schema", "policy", "autonomy-policy", "escalation-policy", "adr", "manifest", "control", "requirement"]
+    surface: Literal["spec", "standard", "schema", "policy", "autonomy-policy", "escalation-policy", "adr", "manifest", "control", "requirement", "ci", "governance"]
     """One line on what changes in this file."""
     change: NotRequired[str]
 

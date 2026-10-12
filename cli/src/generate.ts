@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
-import { GENERATED_DIR } from "./paths.js";
+import { GENERATED_DIR, REPO_ROOT } from "./paths.js";
+import { LOCK_FILE, computeLock, loadInstance, serializeLock } from "./boundary.js";
 import { loadCorpus, loadSchemas, type RepoCorpus } from "./loader.js";
 import { sdkFiles } from "./sdk.js";
 import { loadHubModules, hubIndex } from "./hub.js";
@@ -40,13 +41,29 @@ export async function generateCommand(opts: GenerateOptions): Promise<boolean> {
     ...sdkFiles(schemas),
   ];
 
+  // Only upstream publishes the lock. In a fork the lock is the record of the
+  // release it came from, and regenerating it would erase that record.
+  const instance = await loadInstance();
+  const lock = instance?.role === "upstream" ? serializeLock(await computeLock(REPO_ROOT, instance)) : null;
+
   if (opts.check) {
-    return await checkDrift(files);
+    const generatedOk = await checkDrift(files);
+    const lockOk = lock === null || (await checkLock(lock));
+    return generatedOk && lockOk;
   } else {
     await writeAll(files);
-    console.log(`✓ generated ${files.length} file(s) under /generated.`);
+    if (lock !== null) await fs.writeFile(path.join(REPO_ROOT, LOCK_FILE), lock, "utf8");
+    console.log(`✓ generated ${files.length} file(s) under /generated${lock !== null ? ` and ${LOCK_FILE}` : ""}.`);
     return true;
   }
+}
+
+async function checkLock(expected: string): Promise<boolean> {
+  const current = await fs.readFile(path.join(REPO_ROOT, LOCK_FILE), "utf8").catch(() => null);
+  if (current === expected) return true;
+  console.error(`✗ generate --check: ${LOCK_FILE} does not match the framework files.`);
+  console.error(`Run 'npm run generate' and commit the result.`);
+  return false;
 }
 
 async function writeAll(files: GeneratedFile[]): Promise<void> {

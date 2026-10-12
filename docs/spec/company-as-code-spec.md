@@ -339,6 +339,7 @@ Strategic Scope
 ├── /requirements
 ├── /controls
 ├── /proposals
+├── /decisions
 ├── /schemas
 ├── /memory
 ├── /prompts
@@ -346,6 +347,28 @@ Strategic Scope
 ├── /integrations
 └── /templates
 ```
+
+### The framework around the company
+
+`/company` is the instance: the one part of the tree a company owns outright.
+Everything around it is the framework, shipped by upstream and replaced on
+upgrade. Two root files make that line checkable:
+
+```
+/cac.yaml                what this tree is: upstream or a fork, its namespace,
+                         the framework release it is on, its declared deviations
+/framework.lock.json     a hash of every framework file, published by upstream
+/company                 the instance
+/schemas /cli /runtime   the framework
+/templates /docs /hub
+/conformance
+/generated               derived; regenerated, never edited
+```
+
+Every path belongs to exactly one class: **framework**, **adapt**,
+**instance**, or **derived**. A fork edits `/company` freely, edits adapt files
+knowingly, and changes a framework file only as a declared deviation. The
+classes and the checks are in `docs/standards/framework-boundary.md`.
 
 ---
 

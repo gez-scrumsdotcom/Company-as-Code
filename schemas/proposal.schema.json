@@ -43,7 +43,7 @@
           "path": { "type": "string", "description": "Repo-relative path of the conserved file." },
           "surface": {
             "type": "string",
-            "enum": ["spec", "standard", "schema", "policy", "autonomy-policy", "escalation-policy", "adr", "manifest", "control", "requirement"]
+            "enum": ["spec", "standard", "schema", "policy", "autonomy-policy", "escalation-policy", "adr", "manifest", "control", "requirement", "ci", "governance"]
           },
           "change": { "type": "string", "description": "One line on what changes in this file." }
         }

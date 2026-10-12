@@ -8,6 +8,7 @@ import {
   type UnclassifiedFile,
 } from "./loader.js";
 import { REF_KEYWORD, danglingReferenceErrors, resolveTypedEdges } from "./refs.js";
+import { INSTANCE_FILE, loadInstance } from "./boundary.js";
 
 export interface ValidationProblem {
   file: string;
@@ -91,6 +92,17 @@ export async function validateCommand(): Promise<boolean> {
   const refErrors = danglingReferenceErrors(edges);
   const crossErrors = crossDocumentChecks(corpus);
   const unclassifiedProblems = unclassifiedErrors(unclassified);
+  const instance = await loadInstance();
+  if (instance) {
+    const validator = ajv.getSchema("instance.schema.json");
+    if (validator && !validator(instance)) {
+      problems.push({
+        file: INSTANCE_FILE,
+        kind: "Instance",
+        errors: (validator.errors ?? []).map((e) => `${e.instancePath || "(root)"} ${e.message}`),
+      });
+    }
+  }
 
   if (
     problems.length === 0 &&
