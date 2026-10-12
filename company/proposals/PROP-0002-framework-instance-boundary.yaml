@@ -3,7 +3,7 @@
 # Status stays 'open' until the lead maintainer records a ruling below. The
 # ruling is the decision; the merge is only its mechanical half.
 
-apiVersion: company-as-code/v1
+apiVersion: company-as-code/v1alpha1
 kind: Proposal
 
 id: PROP-0002

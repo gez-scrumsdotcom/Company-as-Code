@@ -1,5 +1,5 @@
 {
-  "edgeCount": 167,
+  "edgeCount": 168,
   "edges": [
     {
       "from": "Agent:billing-reconciler",
@@ -734,6 +734,12 @@
       "to": "Party:person:ceo"
     },
     {
+      "from": "Proposal:PROP-0003",
+      "origin": "reference",
+      "relation": "author",
+      "to": "Party:person:ceo"
+    },
+    {
       "from": "Proposal:PROP-0004",
       "origin": "reference",
       "relation": "author",
@@ -1006,7 +1012,7 @@
   ],
   "edgesByRelation": {
     "appliesTo[]": 5,
-    "author": 3,
+    "author": 4,
     "automation.workflow": 1,
     "consumes[].from": 21,
     "contains": 15,
@@ -1032,7 +1038,7 @@
     "steps[].automation": 4
   },
   "generatedFrom": "/company/**/*.yaml + x-cac-ref annotations in /schemas",
-  "nodeCount": 91,
+  "nodeCount": 92,
   "nodes": [
     {
       "file": "company/domains/product-operations/platform/agents/billing-reconciler.yaml",
@@ -1483,6 +1489,12 @@
       "label": "Declare and enforce the framework/instance boundary, and make upgrades a supported operation"
     },
     {
+      "file": "company/proposals/PROP-0003-honest-versioning.yaml",
+      "id": "Proposal:PROP-0003",
+      "kind": "Proposal",
+      "label": "Rename the document version to v1alpha1, version every schema $id, and ship format changes with migrations"
+    },
+    {
       "file": "company/proposals/PROP-0004-fork-namespacing.yaml",
       "id": "Proposal:PROP-0004",
       "kind": "Proposal",
@@ -1613,7 +1625,7 @@
     "Organization": 1,
     "Party": 11,
     "Person": 1,
-    "Proposal": 3,
+    "Proposal": 4,
     "Requirement": 7,
     "Skill": 5,
     "Task": 1,

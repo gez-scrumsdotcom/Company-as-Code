@@ -3,7 +3,7 @@
 
 /** What this repository is, declared once at the root in cac.yaml. Upstream is the Company-as-Code project itself; a fork is a company running on it. The role decides how the framework/instance boundary is checked, and the framework pin records which upstream release a fork is on. */
 export interface Instance {
-  apiVersion: "company-as-code/v1";
+  apiVersion: "company-as-code/v1alpha1";
   kind: "Instance";
   /** Human-readable name of the project or company. */
   name: string;

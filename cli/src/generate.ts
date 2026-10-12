@@ -9,6 +9,7 @@ import { cognitionGraph } from "./cognition.js";
 import { companyGraph } from "./graph.js";
 import { capabilityMap, controlMatrix } from "./compliance.js";
 import { jsonLdContext } from "./jsonld.js";
+import { API_VERSION } from "./version.js";
 
 interface GenerateOptions {
   check: boolean;
@@ -342,7 +343,7 @@ function bundleFor(
   );
 
   const bundle = {
-    apiVersion: "company-as-code/v1",
+    apiVersion: API_VERSION,
     kind: "ContextBundle",
     generatedFrom: declaredIn,
     agent: {
@@ -522,14 +523,14 @@ function skillAsGeminiGem(skill: any): GeneratedFile {
   }
 
   const gem = {
-    apiVersion: "company-as-code/v1",
+    apiVersion: API_VERSION,
     kind: "GeminiGemAdapter",
     name: skill.name,
     description: String(skill.description ?? "").trim(),
     instructions: instructionBlocks.join("\n\n"),
     metadata: {
       sourceSkill: skill.name,
-      sourceSchema: "company-as-code/v1#Skill",
+      sourceSchema: `${API_VERSION}#Skill`,
       tags: ((skill.tags ?? []) as string[]).slice().sort(),
       relatedSkills: ((skill.relatedSkills ?? []) as string[]).slice().sort(),
       autonomy: skill.autonomy ?? null,

@@ -17,3 +17,4 @@ Engineering and operational standards. Versioned, reviewable, enforceable. If a 
 | [`policy-to-control-matrix.md`](./policy-to-control-matrix.md) | Every declared rule mapped to its enforcement location (schema / CI / runtime / discipline) |
 | [`framework-boundary.md`](./framework-boundary.md) | Which paths belong to the framework and which to the company; what a fork may change |
 | [`fork-namespacing.md`](./fork-namespacing.md) | Where a fork's decisions and hub modules live so they never collide with upstream's |
+| [`versioning.md`](./versioning.md) | Framework release versus document version, the alpha/beta/stable ladder, migrations |

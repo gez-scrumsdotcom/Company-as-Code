@@ -6,7 +6,7 @@
 # In a fork, run `cac init --name "<Company>" --namespace <prefix> --write`
 # instead of editing this by hand.
 
-apiVersion: company-as-code/v1
+apiVersion: company-as-code/v1alpha1
 kind: Instance
 name: Company-as-Code
 role: upstream

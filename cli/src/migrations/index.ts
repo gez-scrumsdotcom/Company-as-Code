@@ -6,6 +6,8 @@
 // Migrations are never edited after release. A mistake in one is fixed by
 // the next one.
 
+import { m0001 } from "./0001-v1-to-v1alpha1.js";
+
 export interface Migration {
   /** Permanent, sequential: 0001, 0002, ... */
   id: string;
@@ -15,4 +17,4 @@ export interface Migration {
   apply(text: string): string;
 }
 
-export const MIGRATIONS: Migration[] = [];
+export const MIGRATIONS: Migration[] = [m0001];

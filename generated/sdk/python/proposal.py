@@ -38,7 +38,7 @@ class ProposalRuling(TypedDict):
 
 class Proposal(TypedDict):
     """The mutation queue for the conserved core. Changing the spec, a standard, an authority grant, a schema, or an autonomy policy is not an ordinary edit: it goes through a Proposal that states the reason, the evidence, the expected benefit, how the change will be validated, and how it is rolled back. A Proposal reaching a terminal status carries a Ruling with the decider's canonical ID and their words verbatim."""
-    apiVersion: Literal["company-as-code/v1"]
+    apiVersion: Literal["company-as-code/v1alpha1"]
     kind: Literal["Proposal"]
     """Canonical, permanent proposal ID. Numbers are never reused, including for withdrawn proposals."""
     id: str

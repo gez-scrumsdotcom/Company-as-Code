@@ -9,6 +9,9 @@ import {
 } from "./loader.js";
 import { REF_KEYWORD, danglingReferenceErrors, resolveTypedEdges } from "./refs.js";
 import { INSTANCE_FILE, loadInstance } from "./boundary.js";
+import { API_VERSION } from "./version.js";
+import { MIGRATIONS } from "./migrations/index.js";
+import { chain } from "./migrate.js";
 
 export interface ValidationProblem {
   file: string;
@@ -116,6 +119,14 @@ export async function validateCommand(): Promise<boolean> {
     return true;
   }
 
+  const outdated = outdatedDocuments(corpus);
+  if (outdated.length > 0) {
+    const migratable = outdated.every((d) => chain(d.version, API_VERSION, MIGRATIONS) !== null);
+    console.error(
+      `✗ ${outdated.length} document(s) declare an older apiVersion than ${API_VERSION}` +
+        (migratable ? ". Run 'cac migrate' to preview the fix, then 'cac migrate --write'." : ", and no migration path exists for at least one of them."),
+    );
+  }
   if (unclassifiedProblems.length > 0) {
     console.error(`✗ unclassified /company YAML (${unclassifiedProblems.length} file(s)):`);
     for (const e of unclassifiedProblems) console.error(`  - ${e}`);
@@ -136,6 +147,17 @@ export async function validateCommand(): Promise<boolean> {
     for (const e of crossErrors) console.error(`  - ${e}`);
   }
   return false;
+}
+
+function outdatedDocuments(corpus: RepoCorpus): { file: string; version: string }[] {
+  const out: { file: string; version: string }[] = [];
+  for (const docs of Object.values(corpus)) {
+    for (const doc of docs) {
+      const v = doc.data?.apiVersion;
+      if (typeof v === "string" && v !== API_VERSION) out.push({ file: doc.file, version: v });
+    }
+  }
+  return out;
 }
 
 function normalizeWhitespace(v: unknown): string {

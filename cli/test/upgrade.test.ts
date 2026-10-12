@@ -198,3 +198,29 @@ describe("cac migrate", () => {
     expect(steps.find((s) => s.file === "company/c.yaml")?.stuck).toMatch(/no migration path/);
   });
 });
+
+describe("migration 0001: v1 → v1alpha1", () => {
+  it("renames the version on apiVersion and frameworkVersion lines and nowhere else", async () => {
+    const { m0001 } = await import("../src/migrations/0001-v1-to-v1alpha1.js");
+    const before = [
+      "# A comment mentioning company-as-code/v1 stays as written.",
+      "apiVersion: company-as-code/v1",
+      "kind: HubModule",
+      'frameworkVersion: "company-as-code/v1" # pinned',
+      "description: Targets company-as-code/v1 documents.",
+      "",
+    ].join("\n");
+    const after = m0001.apply(before);
+    expect(after).toBe(
+      [
+        "# A comment mentioning company-as-code/v1 stays as written.",
+        "apiVersion: company-as-code/v1alpha1",
+        "kind: HubModule",
+        'frameworkVersion: "company-as-code/v1alpha1" # pinned',
+        "description: Targets company-as-code/v1 documents.",
+        "",
+      ].join("\n"),
+    );
+    expect(m0001.apply(after)).toBe(after);
+  });
+});

@@ -23,7 +23,7 @@ class InstanceDeviationsItem(TypedDict):
 
 class Instance(TypedDict):
     """What this repository is, declared once at the root in cac.yaml. Upstream is the Company-as-Code project itself; a fork is a company running on it. The role decides how the framework/instance boundary is checked, and the framework pin records which upstream release a fork is on."""
-    apiVersion: Literal["company-as-code/v1"]
+    apiVersion: Literal["company-as-code/v1alpha1"]
     kind: Literal["Instance"]
     """Human-readable name of the project or company."""
     name: str
