@@ -48,10 +48,10 @@ should be able to take the next release with a command, not a merge.
 - CLI test files run sequentially (`fileParallelism: false`). Several suites write scratch documents into the shared corpus, and running them in parallel let one suite see another's scratch files.
 - The Proposal `surface` enum gains `ci` and `governance`.
 
-### Changed, Ownership and schema host
+### Changed, Provenance and schema host
 
-- **Schema identifiers move to a host the project controls.** Every `$id`, and the JSON-LD `cac:` namespace, now starts with `https://gez-scrumsdotcom.github.io/Company-as-Code/`. The path after the host does not change. See the amendment in [ADR-0009](./docs/adr/0009-honest-versioning.md) and [PROP-0007](./company/proposals/PROP-0007-public-provenance-and-schema-host.yaml).
-- **Ownership is stated plainly.** Gerald Neves created, owns and maintains Company-as-Code. No company sponsors it. Scrums.com is named only as an implementer. `NOTICE`, `MAINTAINERS.md`, `GOVERNANCE.md`, `SUPPORT.md`, the FAQ and the stewardship pages say so.
+- **Schema `$id` host:** `https://gez-scrumsdotcom.github.io/Company-as-Code/`, also the base of the JSON-LD `cac:` namespace. See [ADR-0009](./docs/adr/0009-honest-versioning.md) and [PROP-0007](./company/proposals/PROP-0007-public-provenance-and-schema-host.yaml).
+- **Provenance:** Gerald Neves created, owns and maintains Company-as-Code. Scrums.com runs an implementation of the pattern. `NOTICE`, `MAINTAINERS.md`, `GOVERNANCE.md`, `SUPPORT.md`, the FAQ and the stewardship pages say so.
 - **Contributions need a sign-off.** `CONTRIBUTING.md` adopts the Developer Certificate of Origin. `SECURITY.md` names GitHub private vulnerability reporting as the only channel.
 - `docs/plans/seed-build.md`, a build log from the first seed, is removed.
 

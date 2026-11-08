@@ -17,9 +17,8 @@ should be.
 - **One person owns and decides.** Gerald Neves created the project and owns
   it personally. He is the lead maintainer and the only code owner of the
   conserved core. Every Proposal ruling today is his.
-- **No company owns or sponsors it.** Scrums.com runs an implementation of the
-  pattern and builds a commercial product on it. It is a user of the
-  framework, not its owner.
+- **Scrums.com is an implementer.** Scrums.com runs an implementation of the
+  pattern and builds a commercial product on it, as a user of the framework.
 - **There is no second maintainer yet.** If the lead maintainer became
   unavailable tomorrow, nobody else could merge a change to the specification.
 

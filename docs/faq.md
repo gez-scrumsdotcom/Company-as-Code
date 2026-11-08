@@ -56,9 +56,9 @@ Because the policy is uniform. A force-push that's safe today and a force-push t
 
 Because audit trails are load-bearing. A soft-delete with a tombstone is recoverable; a hard-delete is not. The cost of carrying tombstones forever is small; the cost of losing audit history once is very high.
 
-## Who owns Company-as-Code? What is its relationship to Scrums.com?
+## Who owns Company-as-Code, and how does Scrums.com use it?
 
-Gerald Neves created Company-as-Code. He owns and maintains it personally. No company owns or sponsors the project.
+Gerald Neves created Company-as-Code. He owns and maintains it personally.
 
 Scrums.com runs an implementation of the Company-as-Code pattern. It is a user of the framework, like any other fork, and gets no special treatment from the conformance suite.
 

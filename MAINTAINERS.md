@@ -10,7 +10,7 @@ This file lists the current maintainers of Company-as-Code. Security reports sho
 
 ## Project roles
 
-Gerald Neves created Company-as-Code and maintains it personally. No company owns or sponsors the project. Scrums.com runs an implementation of the Company-as-Code pattern; it is a user of the framework, not its owner.
+Gerald Neves created Company-as-Code and owns and maintains it personally. Scrums.com runs an implementation of the Company-as-Code pattern and is a user of the framework.
 
 External maintainers are added through demonstrated contribution and a Proposal naming the person. The path, and the plan for a second code owner who does not work with or for the lead maintainer, are in [`docs/governance/stewardship.md`](./docs/governance/stewardship.md).
 

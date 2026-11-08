@@ -1534,7 +1534,7 @@
       "file": "company/proposals/PROP-0007-public-provenance-and-schema-host.yaml",
       "id": "Proposal:PROP-0007",
       "kind": "Proposal",
-      "label": "State personal ownership of the project and move schema identifiers to a host the project controls"
+      "label": "Set the schema identifier host and record the project's provenance"
     },
     {
       "file": "company/requirements/REQ-EU-AI-ACT-ART-14.yaml",

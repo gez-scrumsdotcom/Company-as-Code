@@ -60,18 +60,10 @@ an older format is told to run `cac migrate`, and the migration exists.
 cost paid while the only instance is upstream. Any private fork made before this
 change runs `cac migrate --write` once.
 
-**Cost.** The `$id` host is now load-bearing in every identifier. The host is
+**Cost.** The `$id` host is load-bearing in every identifier. The host is
 `https://gez-scrumsdotcom.github.io/Company-as-Code/`, the GitHub Pages site of
-the upstream repository. The lead maintainer controls it, and it cannot lapse
-the way a registered domain can. If the project moves to a domain of its own,
-that is a new document version with a migration, under the rules above.
-
-**Amendment (2026-11-08).** The first draft of this decision used
-`https://company-as-code.dev/` as the host. The project does not control that
-domain, so the identifiers would have been someone else's. The host changed to
-the GitHub Pages site before the first public release. The paths after the host
-did not change. No document carries the old host in a release, so no migration
-is needed.
+the upstream repository, which the lead maintainer controls. Moving to another
+host is a new document version with a migration, under the rules above.
 
 ## Alternatives considered
 
