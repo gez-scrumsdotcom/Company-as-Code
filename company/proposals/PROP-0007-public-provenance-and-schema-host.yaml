@@ -6,8 +6,9 @@ kind: Proposal
 id: PROP-0007
 title: Set the schema identifier host and record the project's provenance
 
-status: open
+status: applied
 opened: 2026-11-08
+appliedOn: 2026-11-08
 
 author:
   kind: person
@@ -54,5 +55,14 @@ validation: >
 
 rollback: >
   Revert the change before a release carries it.
+
+ruling:
+  decision: accepted
+  actor:
+    kind: person
+    id: ceo
+  date: 2026-11-08
+  verbatim: >
+    Accepted by Gerald Neves
 
 tags: [governance, schemas, versioning]
