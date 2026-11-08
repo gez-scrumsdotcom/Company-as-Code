@@ -32,8 +32,8 @@ people the maintainers have never met.
 1. **Rename the document version to `company-as-code/v1alpha1`.** The shape of
    documents does not change. Only the string does.
 2. **Put the document version in every `$id`**:
-   `https://company-as-code.dev/schemas/v1alpha1/<name>.schema.json`. The `$id`
-   moves when the document version moves, and at no other time.
+   `https://gez-scrumsdotcom.github.io/Company-as-Code/schemas/v1alpha1/<name>.schema.json`.
+   The `$id` moves when the document version moves, and at no other time.
 3. **Separate the two version numbers explicitly.** The framework release
    (`0.6.0`) and the document version (`v1alpha1`) are different things with
    different promises, written down in
@@ -60,9 +60,18 @@ an older format is told to run `cac migrate`, and the migration exists.
 cost paid while the only instance is upstream. Any private fork made before this
 change runs `cac migrate --write` once.
 
-**Cost.** `company-as-code.dev` is now load-bearing in every `$id`. The domain
-resolves today; the maintainers must keep control of it, or the identifiers
-become someone else's.
+**Cost.** The `$id` host is now load-bearing in every identifier. The host is
+`https://gez-scrumsdotcom.github.io/Company-as-Code/`, the GitHub Pages site of
+the upstream repository. The lead maintainer controls it, and it cannot lapse
+the way a registered domain can. If the project moves to a domain of its own,
+that is a new document version with a migration, under the rules above.
+
+**Amendment (2026-11-08).** The first draft of this decision used
+`https://company-as-code.dev/` as the host. The project does not control that
+domain, so the identifiers would have been someone else's. The host changed to
+the GitHub Pages site before the first public release. The paths after the host
+did not change. No document carries the old host in a release, so no migration
+is needed.
 
 ## Alternatives considered
 

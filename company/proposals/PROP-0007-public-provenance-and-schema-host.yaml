@@ -1,0 +1,64 @@
+# State who owns the project, and move the schema identifiers to a host it controls.
+
+apiVersion: company-as-code/v1alpha1
+kind: Proposal
+
+id: PROP-0007
+title: State personal ownership of the project and move schema identifiers to a host the project controls
+
+status: open
+opened: 2026-11-08
+
+author:
+  kind: person
+  id: ceo
+
+targets:
+  - path: schemas/
+    surface: schema
+    change: Every $id moves from https://company-as-code.dev/ to https://gez-scrumsdotcom.github.io/Company-as-Code/. The path after the host does not change.
+  - path: docs/adr/0009-honest-versioning.md
+    surface: adr
+    change: Names the new host, says why it changed, and records that no migration is needed.
+  - path: docs/standards/versioning.md
+    surface: standard
+    change: The example $id uses the new host.
+  - path: docs/governance/stewardship.md
+    surface: governance
+    change: The project is owned by its creator personally. No company sponsors it. Scrums.com is named only as an implementer. The step-back commitment applies to the lead maintainer.
+  - path: docs/governance/discussion.md
+    surface: governance
+    change: Questions 2, 5 and 6 refer to the lead maintainer and to implementers instead of a sponsor.
+  - path: GOVERNANCE.md
+    surface: governance
+    change: The stewardship summary matches the new ownership statement.
+
+reason: >
+  The schema identifiers pointed at company-as-code.dev. The project does not
+  control that domain, so every identifier it published would have belonged
+  to someone else. Separately, several files described the project as
+  developed and paid for by a company. The project is the personal work of
+  its creator. Both statements become a public contract when the repository
+  is published, so both must be right before that day.
+
+evidence:
+  - The site at company-as-code.dev is live and is not operated by this project.
+  - https://company-as-code.dev/schemas/v1alpha1/agent.schema.json returns 404.
+  - NOTICE, MAINTAINERS.md and docs/governance/stewardship.md described Scrums.com as the developer and sponsor.
+
+benefit: >
+  Every identifier resolves to a host the lead maintainer controls and that
+  cannot lapse like a registered domain. Adopters can read who owns the
+  project, and that implementers, Scrums.com included, get no special
+  standing.
+
+validation: >
+  npm run validate, npm run generate:check, npm run boundary and both test
+  suites pass. A search for company-as-code.dev finds only the explanation in
+  ADR 0009.
+
+rollback: >
+  Revert the change. No release carries the old host, so a revert needs no
+  migration.
+
+tags: [governance, schemas, versioning]
